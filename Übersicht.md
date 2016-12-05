@@ -17,3 +17,5 @@ Gleiche Karten aber gespiegelt
 
 Endscreen: Rufe den Versuchsleiter
 
+Abhängige Maße; RT und wieviele versuche
+RT= je Kondition Zeit bis zum beenden des Spiels
