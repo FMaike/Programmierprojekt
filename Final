@@ -1,0 +1,280 @@
+Memory[] myMemory = new Memory[8];
+Instruktionen[] myInstruktion=new Instruktionen[4];
+
+int[] x = new int[8];
+int[] y = new int[8];
+int[] fv = new int[8];
+int pair = 0;
+int front = 0;
+int tStop=0;
+int tStart;
+int t2Stop=0;
+int t2Start;
+int tBed1=0;
+int tBed2=0;
+int geseheneKarten=0;
+
+char myKey;
+
+String vpNr="Willkommen zu diesem Experiment \nBitte gib zunächst hier deine Versuchspersonennummer ein. \nBestätige deine Eingabe mit Enter\n";
+String pause="Du hast nun Zeit für eine kurze Pause. \nWenn du bereit bist weiterzuspielen, drücke Enter";
+String instrEins="Im Folgenden wird dir ein Memory-Kartenspiel Präsentiert. \n Deine Aufgabe ist es den jeweiligen Sportlern ihr \n passendes Sportgerät zuzuordnen. \n Um ein nicht passendes Kartenpaar wieder umzudrehen \n drücke die Leertaste. \n Um das Spiel zu Starten drücke nun die Taste W. ";
+String instrZwei="Spiele nun das Spiel noch einmal. \n Ordne den Sportlern wieder ihre Sportgeräte zu. Du startest die zweite Runde mit w.";
+String ende="Herzlichen Glückwunsch, du hast es geschafft! \nVielen Dank für deine Teilnahme, das Experiment ist nun beendet.";
+
+boolean seenEins=false;
+boolean seenPause=false;
+boolean seenZwei=false;
+boolean seenVP=false;
+boolean[] pressed=new boolean[8];
+boolean[] umgedreht = new boolean[8];
+
+PrintWriter output;
+
+void setup(){
+  int myX = width/2;
+  int myY = height/2;
+  //int myFv = 0;
+  //size(500,600);
+  fullScreen();
+  
+  output=createWriter("logfile.txt"); //Die Logdatei wird erstellt
+  
+  //Arrays werden befüllen
+  for (int i = 0; i<8; i++) {
+    y[i] = myY-225; //Die Karten werden mittig auf dem Screen dargestellt
+    x[i] = myX-375;
+    fv[i] = i+1;
+    umgedreht[i]=false;
+    pressed[i]=false;
+    if(myX<(width/2+500)) {
+     myX = myX+200; 
+    }
+    else if(myX>(width/2+500)) {
+      myX = width/2;
+      myY = myY +250;
+    }
+  }
+  for (int i = 0; i<8; i++) {
+    myMemory[i] = new Memory (x[i], y[i], fv[i]);
+  }
+  
+  myInstruktion[0]=new Instruktionen(instrEins);
+  myInstruktion[1]=new Instruktionen(pause);
+  myInstruktion[2]=new Instruktionen(instrZwei);
+  myInstruktion[3]=new Instruktionen(ende);
+  //legen();
+}
+
+void draw() {
+  background(255);
+  fill(0);
+  //println(front);
+  //println(seenEins);
+  //println(seenPause);
+  //println(seenZwei);
+  
+  //Am Beginn wird der Teilnehmer gebeten, seine Versuchspersonennummer anzugeben
+  if(seenVP==false){
+   pushStyle(); 
+   textAlign(CENTER, CENTER); 
+   text(vpNr, width/2, height/2);
+   popStyle();
+    //if(keyPressed==true){
+      //vpNr=vpNr+key;
+      //output.println(vpNr);
+      
+    //}
+    if(keyPressed==true && key==ENTER){
+     seenVP=true;
+    }
+  }
+  //Es werden die ersten Instruktionen angezeigt, die Erklären, wie das Experiment funktionier
+  if(seenVP && seenEins==false) {
+    myInstruktion[0].display();
+     if(keyPressed==true && key=='w'){
+     output.println("Bedingung 1"); //Es wird im Logfile vermerkt, dass die folgenden Angaben sich auf die erste Bedingung beziehen
+     seenEins=true;
+     tStart=millis(); // Die Zeitmessung für die erste Bedingung startet hier 
+    }
+  }
+  
+  if(seenEins){
+     for (int i = 0; i<8; i++) {
+      myMemory[i].display(); //Karten werden mit der Rückseite nach oben angezeigen
+     }
+  //Wenn geklickt wird, werden die Karten umgereht
+   if (mousePressed) {         
+     if(front<=1){ //Es können maximal 2 Karten umgedreht werden
+     aufdecken();
+     }
+   }
+   //Wenn die Leertaste gedrückt wird, werden die Karten wieder mit der Rückseite angezeigt
+   if(keyPressed && key==' '){
+     for (int i = 0; i<8; i++) {
+      myMemory[i].displayBack();
+      umgedreht[i]=false;
+      front = 0;
+      pressed[i]=false;
+     }
+   }
+  //wenn Paare gefunden werden, verschwinden die Karten vom Spielfeld
+   if(umgedreht[0] && umgedreht[5]){
+    myMemory[0].cardX=-150;
+    myMemory[5].cardX=-150;
+    pair = pair+1; //zum Gewinnen werden 4 Paare gebraucht, immer wenn eins gefunden wird, wir hochgezählt
+    front=0;
+    umgedreht[0]=false; umgedreht[5]=false; 
+   //println(pair);
+   }
+   if(umgedreht[1] && umgedreht[7]){
+    myMemory[1].cardX=-150;
+    myMemory[7].cardX=-150;
+    pair = pair+1;
+    front=0;
+    umgedreht[1]=false; umgedreht[7]=false;
+   //println(pair);
+   }
+  if(umgedreht[2] && umgedreht[4]){
+   myMemory[2].cardX=-150;
+   myMemory[4].cardX=-150;
+   pair = pair+1;
+   front=0;
+   umgedreht[2]=false; umgedreht[4]=false;
+   //println(pair);
+  }
+  if(umgedreht[3] && umgedreht[6]){
+   myMemory[3].cardX=-150;
+   myMemory[6].cardX=-150;
+   pair = pair+1;
+   front=0;
+   umgedreht[3]=false; umgedreht[6]=false; 
+   //println(pair);
+  }
+  if(pair==4 && seenEins && seenPause==false){
+    if(tStop==0)tStop=millis();
+    tBed1=tStop-tStart; //Ausrechnen der Dauer für das erste Spiel in millisekunden
+    output.println("Dauer erste Bedingung: " + tBed1);
+    myInstruktion[1].display();
+    //println(pair);
+     if(keyPressed==true && key==ENTER){
+     seenPause=true;
+     }
+   }
+  
+   if(seenEins && seenPause && seenZwei==false){
+    myInstruktion[2].display();
+    
+    if(keyPressed==true && key=='w'){
+      output.println("Bedingung 2");
+      t2Start=millis();
+      for (int i = 0; i<8; i++) {
+        String[]nameZwei={"backside.jpg", "fallschirmspringer2.jpg.jpeg", "fallschirm2.jpg.jpeg", "eiskunstläuferin2.jpg.jpeg", "football2.jpg.jpeg", "schlittschuh2.jpg.jpeg", "skater2.jpg.jpeg", "footballplayer2.jpg.jpeg", "skateboard2.png.jpeg"};
+        myMemory[i].bildName = nameZwei;
+        myMemory[i].display();//Karten mit Rückseite nach oben anzeigen
+        myMemory[i].cardX=x[i];
+        myMemory[i].displayBack();
+        umgedreht[i]=false;
+        front = 0;
+        pressed[i]=false;
+        geseheneKarten=0;
+     }
+     seenZwei=true;
+     }
+   }
+   if(seenZwei){
+  
+  if (mousePressed) {
+    
+    if(front<=1){ //Es können maximal 2 Karten umgedreht werden
+    aufdecken();
+    }
+  }
+  if(keyPressed && key=='u'){
+    for (int i = 0; i<8; i++) {
+    myMemory[i].displayBack();
+    umgedreht[i]=false;
+    front = 0;
+    pressed[i]=false;
+    }
+  }
+  //wenn Paare gefunden werden, verschwinden die Karten vom Spielfeld
+  if(umgedreht[0] && umgedreht[1]){
+   myMemory[0].cardX=-150;
+   myMemory[1].cardX=-150;
+   pair = pair+1; //zum Gewinnen werden 4 Paare gebraucht, immer wenn eins gefunden wird, wir hochgezählt
+   front=0;
+   umgedreht[0]=false; umgedreht[1]=false; //Ist ein Paar gefunden zählen die Karten nicht mehr als umgedreht
+   //println(pair);
+  }
+  if(umgedreht[2] && umgedreht[4]){
+   myMemory[2].cardX=-150;
+   myMemory[4].cardX=-150;
+   pair = pair+1;
+   front=0;
+   umgedreht[2]=false; umgedreht[4]=false;
+   //println(pair);
+  }
+  if(umgedreht[3] && umgedreht[6]){
+   myMemory[3].cardX=-150;
+   myMemory[6].cardX=-150;
+   pair = pair+1;
+   front=0;
+   umgedreht[3]=false; umgedreht[6]=false;
+   //println(pair);
+  }
+  if(umgedreht[5] && umgedreht[7]){
+   myMemory[5].cardX=-150;
+   myMemory[7].cardX=-150;
+   pair = pair+1;
+   front=0;
+   umgedreht[5]=false; umgedreht[7]=false; 
+   //println(pair);
+   }
+   if(pair==8){
+    if(t2Stop==0)t2Stop=millis();
+      tBed2=t2Stop-t2Start; //Ausrechnen der Dauer für das zweite Spiel in millisekunden
+      output.println("Dauer zweite Bedingung:" + tBed2);
+      output.flush();
+      output.close();
+      myInstruktion[3].display();
+    //println(pair);
+       if(keyPressed==true && key=='w'){
+         seenPause=true;
+    
+       }
+    }
+     
+   }
+  }
+
+}
+
+//Aufdecken der Memory Karten
+void aufdecken(){
+  for (int i = 0; i<8; i++) {
+    if(mouseX>x[i] && mouseX<(x[i]+150) && mouseY>y[i] && mouseY<(y[i]+200) && pressed[i]==false) {      
+      myMemory[i].displayFront();
+      umgedreht[i]=true;
+      front = front +1;
+      pressed[i]=true;
+      geseheneKarten++;
+      output.println("Anzahl der gesehenen Karten: " + geseheneKarten);
+    }
+  }
+}
+
+void keyPressed() {
+  if (keyCode == BACKSPACE) {
+    if (vpNr.length() > 0) {
+      vpNr = vpNr.substring(0, vpNr.length()-1);
+    }
+  } else if (keyCode == DELETE) {
+    vpNr = "";
+  } else if (keyCode != SHIFT && keyCode != CONTROL && keyCode != ALT) {
+    vpNr = vpNr + key;
+  }
+}
+
+
+
