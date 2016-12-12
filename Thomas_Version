@@ -1,0 +1,262 @@
+Memory[] myMemory = new Memory[8];
+Instruktionen[] myInstruktion=new Instruktionen[4];
+
+int[] x = new int[8];
+int[] y = new int[8];
+int[] fv = new int[8];
+int pair = 0;
+int front = 0;
+int tStop=0;
+int tStart;
+int t2Stop=0;
+int t2Start;
+int tBed1=0;
+int tBed2=0;
+int mouseClicks1=0;
+int mouseClicks2=0;
+boolean[] umgedreht = new boolean[8];
+char myKey;
+String vpNr="Versuchspersonennummer: ";
+String pause="Pause!";
+String instrEins="Das wird die erste Instruktion, wo alles erklärt wird";
+String instrZwei="Das wird die Instruktion vor der zweiten Bedingung";
+boolean seenEins=false;
+boolean seenPause=false;
+boolean seenZwei=false;
+boolean seenVP=false;
+boolean[] pressed=new boolean[8];
+
+
+void setup(){
+  int myX = 15;
+  int myY = 15;
+  int myFv = 0;
+  size(500,600);
+  
+  //arrays füllen
+  for (int i = 0; i<8; i++) {
+    y[i] = myY;
+    x[i] = myX;
+    fv[i] = i+1;
+    umgedreht[i]=false;
+    pressed[i]=false;
+    if(myX<345) {
+     myX = myX+115; 
+    }
+    else if(myX>345) {
+      myX = 15;
+      myY = myY +150;
+    }
+  }
+  for (int i = 0; i<8; i++) {
+    myMemory[i] = new Memory (x[i], y[i], fv[i]);
+  }
+  
+  myInstruktion[0]=new Instruktionen(instrEins);
+  myInstruktion[1]=new Instruktionen(pause);
+  myInstruktion[2]=new Instruktionen(instrZwei);
+  //legen();
+}
+
+void draw() {
+  background(255);
+  fill(0);
+  //println(front);
+  //println(seenEins);
+  //println(seenPause);
+  //println(seenZwei);
+  
+  
+  if(seenVP==false){
+   pushStyle(); 
+   textAlign(CENTER, CENTER); 
+   text(vpNr, 250, 300);
+   popStyle();
+    if(keyPressed==true){
+      vpNr=vpNr+key;
+    }
+    if(keyPressed==true && key=='w'){
+     seenVP=true;
+    }
+  }
+  if(seenVP && seenEins==false) {
+    myInstruktion[0].display();
+     if(keyPressed==true && key=='w'){
+     seenEins=true;
+     int tStart=millis();
+    }
+  }
+  
+  if(seenEins){
+     for (int i = 0; i<8; i++) {
+      myMemory[i].display(); //Karten mit Rückseite nach oben anzeigen
+     }
+  
+   if (mousePressed) {
+     mouseClicks1++;
+     println(mouseClicks1);
+     if(front<=1){ //Es können maximal 2 Karten umgedreht werden
+     aufdecken();
+     }
+   }
+   if(keyPressed && key=='u'){
+     for (int i = 0; i<8; i++) {
+      myMemory[i].displayBack();
+      umgedreht[i]=false;
+      front = 0;
+      pressed[i]=false;
+     }
+   }
+  //wenn Paare gefunden werden, verschwinden die Karten vom Spielfeld
+   if(umgedreht[0] && umgedreht[5]){
+    myMemory[0].cardX=-150;
+    myMemory[0].cardY=-150;
+    myMemory[5].cardX=-150;
+    myMemory[5].cardY=-150;
+    pair = pair+1; //zum Gewinnen werden 4 Paare gebraucht, immer wenn eins gefunden wird, wir hochgezählt
+    front=0;
+    umgedreht[0]=false; umgedreht[5]=false; //Ist ein Paar gefunden zählen die Karten nicht mehr als umgedreht
+   //println(pair);
+   }
+   if(umgedreht[1] && umgedreht[7]){
+    myMemory[1].cardX=-150;
+    myMemory[1].cardY=-150;
+    myMemory[7].cardX=-150;
+    myMemory[7].cardY=-150;
+    pair = pair+1;
+    front=0;
+    umgedreht[1]=false; umgedreht[7]=false;
+   //println(pair);
+   }
+  if(umgedreht[2] && umgedreht[4]){
+   myMemory[2].cardX=-150;
+   myMemory[2].cardY=-150;
+   myMemory[4].cardX=-150;
+   myMemory[4].cardY=-150;
+   pair = pair+1;
+   front=0;
+   umgedreht[2]=false; umgedreht[4]=false;
+   //println(pair);
+  }
+  if(umgedreht[3] && umgedreht[6]){
+   myMemory[3].cardX=-150;
+   myMemory[3].cardY=-150;
+   myMemory[6].cardX=-150;
+   myMemory[6].cardY=-150;
+   pair = pair+1;
+   front=0;
+   umgedreht[3]=false; umgedreht[6]=false; 
+   //println(pair);
+  }
+  if(pair==4 && seenEins && seenPause==false){
+    if(tStop==0)tStop=millis();
+    tBed1=tStop-tStart;
+    println(tBed1);
+    myInstruktion[1].display();
+    //println(pair);
+     if(keyPressed==true && key=='w'){
+     seenPause=true;
+     }
+   }
+  
+   if(seenEins && seenPause && seenZwei==false){
+    myInstruktion[2].display();
+    if(keyPressed==true && key=='w'){
+      t2Start=millis();
+      for (int i = 0; i<8; i++) {
+        String[]nameZwei={"backside.jpg", "eiskunstläuferin2.jpg.jpeg", "football2.jpg.jpeg", "fallschirm2.jpg.jpeg", "skateboard2.png.jpeg", "fallschirmspringer2.jpg.jpeg", "schlittschuh2.jpg.jpeg",  "skater2.jpg.jpeg", "footballplayer2.jpg.jpeg"};
+        myMemory[i].bildName = nameZwei;
+        myMemory[i].display();//Karten mit Rückseite nach oben anzeigen
+        myMemory[i].cardX=x[i];
+        myMemory[i].cardY=y[i];
+        myMemory[i].displayBack();
+        umgedreht[i]=false;
+        front = 0;
+        pressed[i]=false;
+     }
+     seenZwei=true;
+     }
+   }
+   if(seenZwei){
+  
+  if (mousePressed) {
+    mouseClicks1++;
+    if(front<=1){ //Es können maximal 2 Karten umgedreht werden
+    aufdecken();
+    }
+  }
+  if(keyPressed && key=='u'){
+    for (int i = 0; i<8; i++) {
+    myMemory[i].displayBack();
+    umgedreht[i]=false;
+    front = 0;
+    pressed[i]=false;
+    }
+  }
+  //wenn Paare gefunden werden, verschwinden die Karten vom Spielfeld
+  if(umgedreht[0] && umgedreht[5]){
+   myMemory[0].cardX=-150;
+   myMemory[0].cardY=-150;
+   myMemory[5].cardX=-150;
+   myMemory[5].cardY=-150;
+   pair = pair+1; //zum Gewinnen werden 4 Paare gebraucht, immer wenn eins gefunden wird, wir hochgezählt
+   front=0;
+   umgedreht[0]=false; umgedreht[5]=false; //Ist ein Paar gefunden zählen die Karten nicht mehr als umgedreht
+   //println(pair);
+  }
+  if(umgedreht[1] && umgedreht[7]){
+   myMemory[1].cardX=-150;
+   myMemory[1].cardY=-150;
+   myMemory[7].cardX=-150;
+   myMemory[7].cardY=-150;
+   pair = pair+1;
+   front=0;
+   umgedreht[1]=false; umgedreht[7]=false;
+   //println(pair);
+  }
+  if(umgedreht[2] && umgedreht[4]){
+   myMemory[2].cardX=-150;
+   myMemory[2].cardY=-150;
+   myMemory[4].cardX=-150;
+   myMemory[4].cardY=-150;
+   pair = pair+1;
+   front=0;
+   umgedreht[2]=false; umgedreht[4]=false;
+   //println(pair);
+  }
+  if(umgedreht[3] && umgedreht[6]){
+   myMemory[3].cardX=-150;
+   myMemory[3].cardY=-150;
+   myMemory[6].cardX=-150;
+   myMemory[6].cardY=-150;
+   pair = pair+1;
+   front=0;
+   umgedreht[3]=false; umgedreht[6]=false; 
+   //println(pair);
+   }
+   if(pair==8){
+    if(t2Stop==0)t2Stop=millis();
+    tBed2=t2Stop-t2Start;
+    println(tBed2);
+    myInstruktion[1].display();//hier noch Endbildschirm als Instruktion einfügen
+    //println(pair);
+     if(keyPressed==true && key=='w'){
+     seenPause=true;
+     }
+   }
+     
+   }
+  }
+}
+
+//Aufdecken der Memory Karten
+void aufdecken(){
+  for (int i = 0; i<8; i++) {
+    if(mouseX>x[i] && mouseX<(x[i]+105) && mouseY>y[i] && mouseY<(y[i]+130) && pressed[i]==false) {
+      myMemory[i].displayFront();
+      umgedreht[i]=true;
+      front = front +1;
+      pressed[i]=true;
+    }
+  }
+}
