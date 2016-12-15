@@ -125,7 +125,7 @@ void draw() {
     myInstruktion[4].display();
     
      if(keyPressed==true && key==ENTER){
-      output.println(myInstruktion[4].instr);
+      output.println(myInstruktion[4].instr+",");
       seenVP=true;      
      }
   }
@@ -133,7 +133,7 @@ void draw() {
   if(seenVP && seenEins==false && seenZwei==false) {
     myInstruktion[0].display();
      if(keyPressed==true && key=='w'){
-     output.println("Bedingung 1"); //Es wird im Logfile vermerkt, dass die folgenden Angaben sich auf die erste Bedingung beziehen
+     output.println("Bedingung 1,"); //Es wird im Logfile vermerkt, dass die folgenden Angaben sich auf die erste Bedingung beziehen
      seenEins=true;
      tStart=millis(); // Die Zeitmessung für die erste Bedingung startet hier 
     }
@@ -198,7 +198,7 @@ void draw() {
     //yText=-500;
     if(tStop==0)tStop=millis();
     tBed1=tStop-tStart; //Ausrechnen der Dauer für das erste Spiel in millisekunden
-    output.println("Dauer erste Bedingung: " + tBed1);
+    output.println("Dauer erste Bedingung, " + tBed1+",");
     xText=-500;
     myInstruktion[1].display();
     //println(pair);
@@ -211,7 +211,7 @@ void draw() {
     myInstruktion[2].display();
     
     if(keyPressed==true && key=='w'){
-      output.println("Bedingung 2");
+      output.println("Bedingung 2,");
       t2Start=millis();
       for (int i = 0; i<8; i++) {
         myMemory[i].bildName = nameZwei;
@@ -290,7 +290,7 @@ void draw() {
        xText=-500;
       if(t2Stop==0)t2Stop=millis();
         tBed2=t2Stop-t2Start; //Ausrechnen der Dauer für das zweite Spiel in millisekunden
-        output.println("Dauer zweite Bedingung:" + tBed2);
+        output.println("Dauer zweite Bedingung," + tBed2+",");
         output.flush();
         output.close();
         
@@ -313,7 +313,7 @@ void aufdecken(){
       front = front +1;
       pressed[i]=true;
       geseheneKarten++;
-      output.println("Anzahl der gesehenen Karten: " + geseheneKarten);
+      output.println("Anzahl der gesehenen Karten, " + geseheneKarten+",");
     }
   }
 }
