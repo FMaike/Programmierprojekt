@@ -175,7 +175,7 @@ void draw() {
       if (tStop==0)tStop=millis();
       //Ausrechnen und Aufzeichnen der Dauer des erste Spiels in Millisekunden 
       tBed1=tStop-tStart; 
-      output.println("Dauer erste Bedingung: " + tBed1);
+      output.println("Dauer erste Bedingung"+ "," + tBed1);
       xText=-500;
       //Anzeigen des Pausenscreens
       myInstruktion[1].display();
@@ -276,7 +276,7 @@ void draw() {
       if (t2Stop==0)t2Stop=millis();
       //Ausrechnen und Aufzeichnen der Dauer des zweiten Spiels in Millisekunden 
       tBed2=t2Stop-t2Start;
-      output.println("Dauer zweite Bedingung:" + tBed2);
+      output.println("Dauer zweite Bedingung"+ "," + tBed2);
       output.flush();
       output.close();
 
@@ -296,7 +296,7 @@ void aufdecken() {
       front = front +1;
       pressed[i]=true;
       geseheneKarten++;
-      output.println("Anzahl der gesehenen Karten: " + geseheneKarten);
+      output.println("Anzahl der gesehenen Karten"+"," + geseheneKarten);
     }
   }
 }
